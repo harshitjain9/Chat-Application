@@ -1,28 +1,61 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Navbar v-if="isLoggedIn" v-on:logout="clearUser"></Navbar>
+    <Chat v-if="isLoggedIn"></Chat>
+    <Login v-else></Login>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Navbar from "./components/Navbar";
+import Login from "./components/Login";
+import Chat from "./components/Chat/Chat";
+import firebase from "firebase/app";
+import "./assets/main.css";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    Navbar,
+    Login,
+    Chat,
+  },
+  data() {
+    return {
+      user: null,
+    };
+  },
+  created() {
+    this.user = firebase.auth().currentUser;
+  },
+  computed: {
+    isLoggedIn() {
+      return this.user == null ? false : true;
+    },
+  },
+  methods: {
+    clearUser() {
+      this.user = null;
+      this.$$nextTick(() => {
+        this.$$forceUpdate();
+      });
+    },
+  },
+};
 </script>
 
 <style>
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  padding-top: 56px;
+  min-width: 100vh;
 }
 </style>
